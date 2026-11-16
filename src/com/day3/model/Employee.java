@@ -7,13 +7,12 @@ public class Employee {
     private Designation designation;
     private Department department;
     private EmpType empType;
+    private PayRoll pay;
     
 
 
     public Employee(int employeeId, String employeeName, int salary, Designation designation, Department department, EmpType empType) {
-        if (employeeId <= 0) {
-            throw new IllegalArgumentException("Employee ID must be greater than 0");
-        }
+       
         if (employeeName == null || employeeName.isBlank()) {
             throw new IllegalArgumentException("Employee name cannot be null or blank");
         }
@@ -36,6 +35,7 @@ public class Employee {
         this.department = department;
         this.empType = empType;
         this.salary=salary;
+        this.pay=new PayRoll(this.employeeId,this.salary);
     }
 
     
@@ -103,6 +103,16 @@ public class Employee {
 
 	public void setEmpType(EmpType empType) {
 		this.empType = empType;
+	}
+
+
+	public PayRoll getPay() {
+		return pay;
+	}
+
+
+	public void setPay(PayRoll pay) {
+		this.pay = pay;
 	}
 
 }

@@ -10,20 +10,23 @@ import java.util.Scanner;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import com.day3.exception.InvalidFormatException;
+import com.day3.exception.InvalidIdException;
 import com.day3.model.Department;
 import com.day3.model.Designation;
 import com.day3.model.EmpType;
 import com.day3.model.Employee;
+import com.day3.model.PayRoll;
 import com.day3.util.GenericFilter;
 
 public class EmployeeService {
 
 	private static List<Employee> employees = new ArrayList<>(Arrays.asList(
-			new Employee(1, "ram", 20000, new Designation(1, "junior"), new Department(1, "backend"), EmpType.FULLTIME),
-			new Employee(2, "rm", 30000, new Designation(2, "mid"), new Department(1, "backend"), EmpType.FULLTIME),
-			new Employee(3, "am", 40000, new Designation(3, "senior"), new Department(1, "backend"), EmpType.FULLTIME),
-			new Employee(4, "ram p", 20000, new Designation(1, "junior"), new Department(2, "Ai"), EmpType.FULLTIME),
-			new Employee(5, "ram prasad", 20000, new Designation(3, "mid"), new Department(2, "AI"),
+			new Employee(1, "ram", 500000, new Designation(1, "junior"), new Department(1, "backend"), EmpType.FULLTIME),
+			new Employee(2, "rm", 300000, new Designation(2, "mid"), new Department(1, "backend"), EmpType.FULLTIME),
+			new Employee(3, "am", 400000, new Designation(3, "senior"), new Department(1, "backend"), EmpType.FULLTIME),
+			new Employee(4, "ram p", 200000, new Designation(1, "junior"), new Department(2, "Ai"), EmpType.FULLTIME),
+			new Employee(5, "ram prasad", 200000, new Designation(3, "mid"), new Department(2, "AI"),
 					EmpType.FULLTIME)));
 
 	private GenericFilter<Employee> filter = new GenericFilter<>();
@@ -35,30 +38,46 @@ public class EmployeeService {
 
 	}
 
-	public void addEmployee() {
+	public void addEmployee() throws InvalidIdException,InvalidFormatException {
 		System.out.println("Enter Employee ID: ");
 		int employeeId = sc.nextInt();
+		if(employeeId<0) {
+			throw new InvalidIdException(" employee id must be positive");
+		}
 		sc.nextLine();
 		System.out.println("Enter Employee Name: ");
 		String employeeName = sc.nextLine();
-		System.out.println("Enter Employee Salary: ");
+		System.out.println("Enter Employee Salary: (in Lakhs)");
 		int employeeSalary = sc.nextInt();
+		if(employeeSalary<0) {
+			throw new InvalidIdException(" employee salary must be positive");
+		}
 		// displays all existing departments for user conventions
 
 		getAlldepartments(employees);
 		System.out.println("Enter Employee Department ID: ");
 		int departmentId = sc.nextInt();
+		if(departmentId<0) {
+			throw new InvalidIdException(" department id must be positive");
+		}
 		sc.nextLine();
 		System.out.println("Enter Employee Department Name: ");
 		String departmentName = sc.nextLine();
 		getAllDesignations(employees);
 		System.out.println("Enter Employee Designation ID: ");
 		int designationId = sc.nextInt();
+		if(designationId<0) {
+			throw new InvalidIdException(" Designation id must be positive");
+		}
 		sc.nextLine(); // Consume the newline character
 		System.out.println("Enter Employee Designation Name: ");
 		String designationName = sc.nextLine();
 		System.out.println("Enter Employee Type (FULLTIME, PARTTIME, INTERN): ");
 		String empTypeInput = sc.nextLine().toUpperCase();
+			if(!empTypeInput.equals("FULLTIME")||!empTypeInput.equals("PARTTIME")||
+					!empTypeInput.equals("PARTTIME")) {
+				throw new InvalidFormatException("Invalid Employee Type please check");
+			}
 
 		try {
 			boolean exist = employees.stream().anyMatch(e -> e.getEmployeeId() == employeeId);
@@ -157,8 +176,14 @@ public class EmployeeService {
 
 		List<Employee> result = filter.filter(employees,
 				e -> e.getDepartment().departmentName().equalsIgnoreCase(departmentName));
+		if(result==null) {
+			System.out.println("no employees found ...");
+		}
 
 		result.forEach(System.out::println);
+		
+		
+		
 	}
 
 	public void filterBySalary() {
@@ -167,8 +192,13 @@ public class EmployeeService {
 		int salary = sc.nextInt();
 
 		List<Employee> result = filter.filter(employees, e -> e.getSalary() >= salary);
+		if(result==null) {
+			System.out.println("no employees found ...");
+		}
 
 		result.forEach(System.out::println);
+		
+		
 	}
 
 	public void filterByType() {
@@ -179,6 +209,9 @@ public class EmployeeService {
 		EmpType type = EmpType.valueOf(sc.nextLine().toUpperCase());
 
 		List<Employee> result = filter.filter(employees, e -> e.getEmpType() == type);
+		if(result==null) {
+			System.out.println("no employees found ...");
+		}
 
 		result.forEach(System.out::println);
 	}
@@ -305,7 +338,7 @@ public class EmployeeService {
 
 	}
 
-	public void UpdateDetailsById() {
+	public void UpdateDetailsById() throws InvalidIdException , InvalidFormatException {
 		// TODO Auto-generated method stub
 		viewAllEmployees();
 
@@ -379,6 +412,10 @@ public class EmployeeService {
 					else if( inChoice==2) {
 						System.out.println("Enter the id of the department ");
 						int deptId=sc.nextInt();
+						if(deptId<0) {
+								throw new InvalidIdException(" Department id must be positive");
+							}
+						
 						sc.nextLine();
 						System.out.println("Enter the department Name");
 						String deptName=sc.nextLine();
@@ -414,6 +451,9 @@ public class EmployeeService {
 					else if( inChoice==2) {
 						System.out.println("Enter the id of the designation ");
 						int deptId=sc.nextInt();
+						if(deptId<0) {
+							throw new InvalidIdException(" Designation id must be positive");
+						}
 						sc.nextLine();
 						System.out.println("Enter the designation Name");
 						String deptName=sc.nextLine();
@@ -427,7 +467,14 @@ public class EmployeeService {
 				else{
 					System.out.println(" enter one of the following TYpe 1. FULLTIME \n 2.PARTTIME \n 3.INTERN");
 					sc.nextLine();
-					EmpType emT=EmpType.valueOf(sc.nextLine().toUpperCase());
+					String empTypeInput=sc.nextLine().toUpperCase();
+					
+					if(!empTypeInput.equals("FULLTIME")||!empTypeInput.equals("PARTTIME")||
+							!empTypeInput.equals("INTERN")) {
+						throw new InvalidFormatException("Invalid Employee Type please check");
+					}
+					EmpType emT=EmpType.valueOf(empTypeInput);
+					
 					em.get().setEmpType(emT);
 				}
 				employees.add(em.get());
@@ -533,6 +580,35 @@ public class EmployeeService {
 		}
 		
 
+	}
+
+	public void getPayRollDetails() throws InvalidIdException {
+		// TODO Auto-generated method stub
+		viewAllEmployees();
+		
+		System.out.println("enter Id of a employee to get his Payroll");
+		int empId=sc.nextInt();
+		if(empId<0) {
+			throw new InvalidIdException("id must br posituve");
+		}
+		Optional<PayRoll> p=getPayRoll( empId);
+		if(p.isEmpty()) {
+			System.out.println("Invalid employee Id ::");
+		}
+		else {
+			System.out.println(p.get().toString());
+		}
+		
+	}
+
+	private Optional<PayRoll> getPayRoll(int empId) {
+		// TODO Auto-generated method stub
+		for(Employee e:employees) {
+			if(e.getEmployeeId()==empId) {
+				return Optional.ofNullable(e.getPay());
+			}
+		}
+		return null;
 	}
 
 }

@@ -2,6 +2,8 @@ package com.day3;
 
 import java.util.Scanner;
 
+import com.day3.exception.InvalidFormatException;
+import com.day3.exception.InvalidIdException;
 import com.day3.service.EmployeeService;
 
 public class Main {
@@ -26,6 +28,7 @@ public class Main {
 	    System.out.println("14. Delete A Employee By ID");
 	    System.out.println("15. Update Details of employee .");
 	    System.out.println("16. Over All Insignts");
+	    System.out.println("17.get PayRoll of employee By ID");
 	    
 	    
 	    
@@ -41,7 +44,8 @@ public class Main {
 	        System.out.println("Enter your choice: ");
 	        getmenu();
 	        int ch=sc.nextInt();
-	        while(ch>0&&ch<=16){
+	        while(ch>0&&ch<=17){
+	        	try {
 	            switch(ch){
 	                case 1->employeeService.addEmployee();   
 	                case 2->
@@ -63,6 +67,7 @@ public class Main {
 	                    case 14->employeeService.DeleteById();
 	                    case 15->employeeService.UpdateDetailsById();
 	                    case 16->employeeService.getTotalInsights();
+	                    case 17->employeeService.getPayRollDetails();
 	                    
 	                
 	            }
@@ -70,6 +75,15 @@ public class Main {
 	            getmenu();
 	            ch=sc.nextInt();
 
+	        }
+	        
+	        catch(InvalidFormatException|InvalidIdException e) {
+	        	System.out.println("sonthing went wrong  please re enter your choice ");
+	        	System.out.println("Enter your choice: ");
+	            getmenu();
+	            ch=sc.nextInt();
+	        }
+	        	
 	        }
 	        sc.close();
 	        System.out.println("Thank you for using Employee Management System");
